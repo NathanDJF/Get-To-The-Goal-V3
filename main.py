@@ -22,17 +22,21 @@ class Player():
     def draw(self):
         keys = pygame.key.get_pressed()
         
-        if keys[pygame.K_a] and self.x > self.vel: 
-            self.x -= self.vel
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+            if self.x > self.vel:
+                self.x -= self.vel
 
-        if keys[pygame.K_d] and self.x < 900 - self.vel - 100:  
-            self.x += self.vel
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+            if self.x < 900 - self.vel - 100:
+                self.x += self.vel
             
-        if keys[pygame.K_w] and self.y > self.vel:
-            self.y -= self.vel
+        if keys[pygame.K_w] or keys[pygame.K_UP]:
+            if self.y > self.vel:
+                self.y -= self.vel
 
-        if keys[pygame.K_s] and self.y < 500 - 100 - self.vel:
-            self.y += self.vel
+        if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+            if self.y < 500 - 100 - self.vel:
+                self.y += self.vel
             
         for spike in self.spikes:
             if self.check_collision(spike):
@@ -44,7 +48,7 @@ class Player():
     
     def check_collision(self, spike):
         player_rect = self.img.get_rect(topleft=(self.x, self.y))
-        spike_rect = spike.img.get_rect(topleft=(spike.x, spike.y))
+        spike_rect = spike.img.get_rect(topleft=(spike.x + 15, spike.y + 15), width=70, height=70)
         return player_rect.colliderect(spike_rect)
         
 class Spike():
@@ -64,7 +68,7 @@ player_thing.spikes = spikes
 while True:
     clock = pygame.time.Clock()
     clock.tick(60)
-    screen.fill('white')
+    screen.fill('cyan')
     player_thing.draw()
     for spike in spikes:
         spike.draw()
