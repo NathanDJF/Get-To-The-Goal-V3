@@ -6,6 +6,7 @@ import sys
 player_img = pygame.image.load(os.path.join('Assets/player.png'))
 spike_man_img = pygame.image.load(os.path.join('Assets/spike.png'))
 moving_spike_man_img = pygame.image.load(os.path.join('Assets/moving spike.png'))
+moving_spike_man_handle_img = pygame.image.load(os.path.join('Assets/moving spike handle.png'))
 
 # screen
 screen = pygame.display.set_mode((900, 500))
@@ -74,17 +75,39 @@ class Spike():
         screen.blit(self.img, (self.x, self.y))
         
 class Moving_Spike():
-    def __init__(self, x, y, img):
+    def __init__(self, x, y, img, speed):
         self.x = x
         self.y = y
         self.img = img
+        self.speed = speed
+        self.go_up = False
+        self.go_down = False
         
     def draw(self):
+        
+        if self.go_down == False:
+            self.go_up = True
+        if self.go_up == False:
+            self.go_down = True
+        if self.y <= 0:
+            self.go_up = False
+            self.go_down = True
+        if self.y >= 400:
+            self.go_up = True
+            self.go_down = False
+        
+        # go down or up
+        if self.go_up:
+            self.y -= self.speed
+        elif self.go_down:
+            self.y += self.speed
+        
+        screen.blit(moving_spike_man_handle_img, (self.x + 45, 0))
         screen.blit(self.img, (self.x, self.y))
         
 player_thing = Player(20, 200, 5, player_img, [], [])
 spikes = [Spike(400, 200, spike_man_img)]
-moving_spikes = [Moving_Spike(700, 200, moving_spike_man_img)]
+moving_spikes = [Moving_Spike(700, 200, moving_spike_man_img, 4), Moving_Spike(800, 200, moving_spike_man_img, 100)]
 player_thing.spikes = spikes
 player_thing.moving_spikes = moving_spikes
 
@@ -93,11 +116,11 @@ while True:
     clock = pygame.time.Clock()
     clock.tick(60)
     screen.fill('cyan')
-    player_thing.draw()
     for spike in spikes:
         spike.draw()
     for moving_spike in moving_spikes:
         moving_spike.draw()
+    player_thing.draw()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
