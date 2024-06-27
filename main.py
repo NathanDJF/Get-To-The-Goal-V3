@@ -202,7 +202,8 @@ class Level():
             self.flag.draw()
             
             # spikes
-            spikes = [Spike(350, 200, spike_man_img), Spike(450, 200, spike_man_img)]
+            spikes = [Spike(350, 200, spike_man_img), 
+                      Spike(450, 200, spike_man_img)]
             player_thing.spikes = spikes
             for spike in spikes:
                 spike.draw()
@@ -214,7 +215,30 @@ class Level():
             level_3_description = font2.render("More spikes", True, (0, 0, 0))
             screen.blit(level_3_text, (400, 0))
             screen.blit(level_3_description, (50, 50))
-        
+            
+        if self.level == 4:
+            # the player flag
+            player_thing.draw()
+            self.flag.draw()
+            
+            # spikes
+            spikes = (Spike(200, 20, spike_man_img),
+                      Spike(200, 380, spike_man_img),
+                      Spike(400, 200, spike_man_img),
+                      Spike(600, 20, spike_man_img),
+                      Spike(600, 380, spike_man_img))
+            player_thing.spikes = spikes
+            for spike in spikes:
+                spike.draw()
+            
+            player_thing.check()
+            
+            # text
+            level_4_text = font.render("Level 4", True, (0, 0, 0))
+            level_4_description = font2.render("Go through", True, (0, 0, 0))
+            screen.blit(level_4_text, (400, 0))
+            screen.blit(level_4_description, (50, 50))
+            
 flag = Flag(775, 300, flag_img)
 player_thing = Player(20, 200, 5, player_img, [], [], flag)
 #moving_spikes = [Moving_Spike(700, 200, moving_spike_man_img, 4), Moving_Spike(800, 200, moving_spike_man_img, 100)]
@@ -224,6 +248,7 @@ player_thing = Player(20, 200, 5, player_img, [], [], flag)
 level_1 = Level(1, flag)
 level_2 = Level(2, flag)
 level_3 = Level(3, flag)
+level_4 = Level(4, flag)
 
 # main loop
 while True:
@@ -238,6 +263,8 @@ while True:
         level_2.run()
     elif current_level == 3:
         level_3.run()
+    elif current_level == 4:
+        level_4.run()
         
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
