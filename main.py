@@ -153,6 +153,14 @@ class Level():
         if level == 7:
             self.moving_spikes = [Moving_Spike(350, 200, moving_spike_man_img, 3),
                                   Moving_Spike(500, 200, moving_spike_man_img, 7)]
+        if level == 8:
+            self.moving_spikes = [Moving_Spike(500, 200, moving_spike_man_img, 7),
+                                  Moving_Spike(300, 400, moving_spike_man_img, 8)]
+        if level == 9:
+            self.moving_spikes = [Moving_Spike(200, 250, moving_spike_man_img, 7),
+                                  Moving_Spike(400, 400, moving_spike_man_img, 5),
+                                  Moving_Spike(600, 100, moving_spike_man_img, 8)]
+        
     
     def run(self):
         global completed_level
@@ -300,6 +308,50 @@ class Level():
             screen.blit(level_7_text, (400, 0))
             screen.blit(level_7_description, (50, 50))
             
+        if self.level == 8:
+            # the player flag
+            player_thing.draw()
+            self.flag.draw()
+            
+            # spikes
+            spikes = [Spike(400, 200, spike_man_img)]
+            player_thing.spikes = spikes
+            player_thing.moving_spikes = self.moving_spikes
+            for spike in spikes:
+                spike.draw()
+            for moving_spike in self.moving_spikes:
+                moving_spike.draw()
+                
+            player_thing.check()
+            
+            # text
+            level_8_text = font.render("Level 8", True, (0, 0, 0))
+            level_8_description = font2.render("Moving spikes and spikes", True, (0, 0, 0))
+            screen.blit(level_8_text, (400, 0))
+            screen.blit(level_8_description, (50, 50))
+            
+        if self.level == 9:
+            # the player flag
+            player_thing.draw()
+            self.flag.draw()
+            
+            # spikes
+            spikes = []
+            player_thing.spikes = spikes
+            player_thing.moving_spikes = self.moving_spikes
+            #for spike in spikes:
+                #spike.draw()
+            for moving_spike in self.moving_spikes:
+                moving_spike.draw()
+            
+            player_thing.check()
+            
+            # text
+            level_9_text = font.render("Level 9", True, (0, 0, 0))
+            level_9_description = font2.render("No room for improvement", True, (0, 0, 0))
+            screen.blit(level_9_text, (400, 0))
+            screen.blit(level_9_description, (50, 50))
+            
 flag = Flag(775, 300, flag_img)
 player_thing = Player(20, 200, 5, player_img, [], [], flag)
 
@@ -311,6 +363,8 @@ level_4 = Level(4, flag)
 level_5 = Level(5, flag)
 level_6 = Level(6, flag)
 level_7 = Level(7, flag)
+level_8 = Level(8, flag)
+level_9 = Level(9, flag)
 
 # main loop
 while True:
@@ -331,6 +385,10 @@ while True:
         level_6.run()
     elif current_level == 7:
         level_7.run()
+    elif current_level == 8:
+        level_8.run()
+    elif current_level == 9:
+        level_9.run()
         
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
