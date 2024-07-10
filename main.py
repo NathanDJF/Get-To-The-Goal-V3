@@ -160,6 +160,14 @@ class Level():
             self.moving_spikes = [Moving_Spike(200, 250, moving_spike_man_img, 7),
                                   Moving_Spike(400, 400, moving_spike_man_img, 5),
                                   Moving_Spike(600, 100, moving_spike_man_img, 8)]
+        if level == 10:
+            self.moving_spikes = [Moving_Spike(200, 0, moving_spike_man_img, 3),
+                                  Moving_Spike(400, 0, moving_spike_man_img, 7),
+                                  Moving_Spike(600, 0, moving_spike_man_img, 10)]
+        if level == 11:
+            self.moving_spikes = [Moving_Spike(300, 0, moving_spike_man_img, 6),
+                                  Moving_Spike(400, 0, moving_spike_man_img, 5),
+                                  Moving_Spike(500, 400, moving_spike_man_img, 6)]
         
     
     def run(self):
@@ -352,6 +360,58 @@ class Level():
             screen.blit(level_9_text, (400, 0))
             screen.blit(level_9_description, (50, 50))
             
+        if self.level == 10:
+            # the player flag
+            player_thing.draw()
+            self.flag.draw()
+            
+            # spikes
+            spikes = [Spike(300, 0, spike_man_img),
+                      Spike(500, 400, spike_man_img),
+                      Spike(700, 0, spike_man_img),
+                      Spike(700, 400, spike_man_img)]
+
+            player_thing.spikes = spikes
+            player_thing.moving_spikes = self.moving_spikes
+            for spike in spikes:
+                spike.draw()
+            for moving_spike in self.moving_spikes:
+                moving_spike.draw()
+            
+            player_thing.check()
+            
+            # text
+            level_10_text = font.render("Level 10", True, (0, 0, 0))
+            level_10_description = font2.render("Climax", True, (0, 0, 0))
+            screen.blit(level_10_text, (400, 0))
+            screen.blit(level_10_description, (50, 50))
+            
+        if self.level == 11:
+            # the player flag
+            player_thing.draw()
+            self.flag.draw()
+            
+            # spikes
+            spikes = [Spike(200, 20, spike_man_img),
+                      Spike(200, 380, spike_man_img),
+                      Spike(400, 200, spike_man_img),
+                      Spike(600, 20, spike_man_img),
+                      Spike(600, 380, spike_man_img)]
+            player_thing.spikes = spikes
+            player_thing.moving_spikes = self.moving_spikes
+            for spike in spikes:
+                spike.draw()
+            for moving_spike in self.moving_spikes:
+                moving_spike.draw()
+            
+            player_thing.check()
+            
+            # text
+            level_11_text = font.render("Level 11", True, (0, 0, 0))
+            level_11_description = font2.render("Deja Vu", True, (0, 0, 0))
+            screen.blit(level_11_text, (400, 0))
+            screen.blit(level_11_description, (50, 50))
+            
 flag = Flag(775, 300, flag_img)
 player_thing = Player(20, 200, 5, player_img, [], [], flag)
 
@@ -365,6 +425,8 @@ level_6 = Level(6, flag)
 level_7 = Level(7, flag)
 level_8 = Level(8, flag)
 level_9 = Level(9, flag)
+level_10 = Level(10, flag)
+level_11 = Level(11, flag)
 
 # main loop
 while True:
@@ -389,6 +451,10 @@ while True:
         level_8.run()
     elif current_level == 9:
         level_9.run()
+    elif current_level == 10:
+        level_10.run()
+    elif current_level == 11:
+        level_11.run()
         
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
