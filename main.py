@@ -3,13 +3,19 @@ import os
 import sys
 
 pygame.init()
+pygame.mixer.init()
 
+# music and sfx
+pygame.mixer.music.load('Assets/bg music.mp3')
+pygame.mixer.music.set_volume(0.7)
+death_sound = pygame.mixer.Sound('Assets/death effect.mp3')
 # images
 player_img = pygame.image.load(os.path.join('Assets/player.png'))
 spike_man_img = pygame.image.load(os.path.join('Assets/spike.png'))
 moving_spike_man_img = pygame.image.load(os.path.join('Assets/moving spike.png'))
 moving_spike_man_handle_img = pygame.image.load(os.path.join('Assets/moving spike handle.png'))
 flag_img = pygame.image.load(os.path.join('Assets/flag.png'))
+play_button_img = pygame.image.load(os.path.join('Assets/play button.png'))
 
 # screen
 screen = pygame.display.set_mode((900, 500))
@@ -19,11 +25,14 @@ pygame.display.set_caption('Get To The Goal V3')
 font = pygame.font.SysFont("Arial", 50, bold=True, italic=False)
 font2 = pygame.font.SysFont("Arial", 20, bold=False, italic=False)
 font3 = pygame.font.SysFont("Arial", 45, bold=False, italic=False)
+font4 = pygame.font.SysFont("Arial", 100, bold=True, italic=False)
 
 # some variables or smth
+game_started = False
 completed_level = False
-current_level = 12
+current_level = 1
 winning_text = font3.render("Level Complete! Press ENTER to go to the next level", True, (255, 255, 255))
+final_winning_text = font3.render("You Win! Press ENTER to return to the main menu", True, (255, 255, 255))
 
 # movement
 class Player():
@@ -61,12 +70,14 @@ class Player():
             
         for spike in self.spikes:
             if self.check_collision_spike(spike):
+                pygame.mixer.Sound.play(death_sound)
                 self.x = 20
                 self.y = 200
                 break
             
         for moving_spike in self.moving_spikes:
             if self.check_collision_moving_spike(moving_spike):
+                pygame.mixer.Sound.play(death_sound)
                 self.x = 20
                 self.y = 200
                 break
@@ -94,14 +105,47 @@ class Player():
     def check(self):
         global completed_level
         global current_level
+        global game_started
         keys = pygame.key.get_pressed()
         if completed_level:
-            screen.blit(winning_text, (15, 200))
-            if keys[pygame.K_RETURN]:
-                self.x = 20
-                self.y = 200
-                current_level += 1
-                completed_level = False
+            if current_level < 15:
+                screen.blit(winning_text, (15, 200))
+                if keys[pygame.K_RETURN]:
+                    self.x = 20
+                    self.y = 200
+                    current_level += 1
+                    completed_level = False
+            else:
+                screen.blit(final_winning_text, (15, 200))
+                if keys[pygame.K_RETURN]:
+                    completed_level = False
+                    game_started = False
+
+class Button():
+    def __init__(self, x, y, img):
+        self.x = x
+        self.y = y
+        self.img = img
+        self.rect = img.get_rect()
+        self.rect.topleft = (x, y)
+        self.clicked = False
+        
+    def draw(self):
+        action = False
+        
+        pos = pygame.mouse.get_pos()
+        
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.clicked = True
+                action = True
+            
+            if pygame.mouse.get_pressed()[0] == 0:
+                self.clicked = False
+                
+        screen.blit(self.img, (self.x, self.y))
+        
+        return action
 
 class Spike():
     def __init__(self, x, y, img):
@@ -179,7 +223,17 @@ class Level():
             self.moving_spikes = [Moving_Spike(200, 200, moving_spike_man_img, 7),
                                   Moving_Spike(400, 0, moving_spike_man_img, 10),
                                   Moving_Spike(600, 100, moving_spike_man_img, 8)]
-        
+        if level == 14:
+            self.moving_spikes =  [Moving_Spike(200, 0, moving_spike_man_img, 3),
+                                  Moving_Spike(300, 0, moving_spike_man_img, 4),
+                                  Moving_Spike(500, 0, moving_spike_man_img, 6),
+                                  Moving_Spike(600, 0, moving_spike_man_img, 7),
+                                  Moving_Spike(800, 0, moving_spike_man_img, 9)]
+        if level == 15:
+            self.moving_spikes = [Moving_Spike(200, 0, moving_spike_man_img, 8),
+                                  Moving_Spike(400, 0, moving_spike_man_img, 5),
+                                  Moving_Spike(600, 0, moving_spike_man_img, 6),
+                                  Moving_Spike(800, 400, moving_spike_man_img, 5)]
     
     def run(self):
         global completed_level
@@ -474,9 +528,76 @@ class Level():
             level_13_description = font2.render("Chaos", True, (0, 0, 0))
             screen.blit(level_13_text, (400, 0))
             screen.blit(level_13_description, (50, 50))
-                               
+            
+        if self.level == 14:
+            # the player flag
+            player_thing.draw()
+            self.flag.draw()
+            
+            # spikes
+            spikes = [Spike(200, 0, spike_man_img),
+                      Spike(300, 0, spike_man_img),
+                      Spike(400, 0, spike_man_img),
+                      Spike(500, 0, spike_man_img),
+                      Spike(600, 0, spike_man_img),
+                      Spike(700, 0, spike_man_img),
+                      Spike(800, 0, spike_man_img),
+                      Spike(200, 400, spike_man_img),
+                      Spike(300, 400, spike_man_img),
+                      Spike(400, 400, spike_man_img),
+                      Spike(500, 400, spike_man_img),
+                      Spike(600, 400, spike_man_img),
+                      Spike(700, 400, spike_man_img),
+                      Spike(800, 400, spike_man_img)]
+            player_thing.spikes = spikes
+            player_thing.moving_spikes = self.moving_spikes
+            for spike in spikes:
+                spike.draw()
+            for moving_spike in self.moving_spikes:
+                moving_spike.draw()
+            
+            player_thing.check()
+            
+            # text
+            level_14_text = font.render("Level 14", True, (0, 0, 0))
+            level_14_description = font2.render("Hard", True, (0, 0, 0))
+            screen.blit(level_14_text, (400, 0))
+            screen.blit(level_14_description, (50, 50))
+            
+        if self.level == 15:
+            # the player flag
+            player_thing.draw()
+            self.flag.draw()
+            
+            # spikes
+            spikes = [Spike(300, 0, spike_man_img),
+                      Spike(300, 75, spike_man_img),
+                      Spike(300, 150, spike_man_img),
+                      Spike(500, 200, spike_man_img),
+                      Spike(500, 300, spike_man_img),
+                      Spike(500, 400, spike_man_img),
+                      Spike(700, 0, spike_man_img),
+                      Spike(700, 100, spike_man_img),
+                      Spike(700, 300, spike_man_img),
+                      Spike(700, 400, spike_man_img),]
+            player_thing.spikes = spikes
+            player_thing.moving_spikes = self.moving_spikes
+            for spike in spikes:
+                spike.draw()
+            for moving_spike in self.moving_spikes:
+                moving_spike.draw()
+                
+            player_thing.check()
+            
+            # text
+            level_15_text = font.render("Level 15", True, (0, 0, 0))
+            level_15_description = font2.render("The end.", True, (0, 0, 0))
+            screen.blit(level_15_text, (400, 0))
+            screen.blit(level_15_description, (50, 50))
+            
 flag = Flag(775, 300, flag_img)
 player_thing = Player(20, 200, 5, player_img, [], [], flag)
+play_button = Button(350, 300, play_button_img)
 
 # level stuff
 level_1 = Level(1, flag)
@@ -492,38 +613,51 @@ level_10 = Level(10, flag)
 level_11 = Level(11, flag)
 level_12 = Level(12, flag)
 level_13 = Level(13, flag)
+level_14 = Level(14, flag)
+level_15 = Level(15, flag)
 
 # main loop
+pygame.mixer.music.play(-1)
 while True:
     clock = pygame.time.Clock()
     clock.tick(60)
     screen.fill((0, 128, 255))
-    if current_level == 1:
-        level_1.run()
-    elif current_level == 2:
-        level_2.run()
-    elif current_level == 3:
-        level_3.run()
-    elif current_level == 4:
-        level_4.run()
-    elif current_level == 5:
-        level_5.run()
-    elif current_level == 6:
-        level_6.run()
-    elif current_level == 7:
-        level_7.run()
-    elif current_level == 8:
-        level_8.run()
-    elif current_level == 9:
-        level_9.run()
-    elif current_level == 10:
-        level_10.run()
-    elif current_level == 11:
-        level_11.run()
-    elif current_level == 12:
-        level_12.run()
-    elif current_level == 13:
-        level_13.run()
+    if game_started == False:
+        main_menu_text = font4.render("Get To The Goal V3", True, (0, 0, 0))
+        screen.blit(main_menu_text, (75, 50))
+        if play_button.draw():
+            game_started = True
+    if game_started:
+        if current_level == 1:
+            level_1.run()
+        elif current_level == 2:
+            level_2.run()
+        elif current_level == 3:
+            level_3.run()
+        elif current_level == 4:
+            level_4.run()
+        elif current_level == 5:
+            level_5.run()
+        elif current_level == 6:
+            level_6.run()
+        elif current_level == 7:
+            level_7.run()
+        elif current_level == 8:
+            level_8.run()
+        elif current_level == 9:
+            level_9.run()
+        elif current_level == 10:
+            level_10.run()
+        elif current_level == 11:
+            level_11.run()
+        elif current_level == 12:
+            level_12.run()
+        elif current_level == 13:
+            level_13.run()
+        elif current_level == 14:
+            level_14.run()
+        elif current_level == 15:
+            level_15.run()
         
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
