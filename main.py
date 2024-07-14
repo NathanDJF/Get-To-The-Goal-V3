@@ -16,10 +16,12 @@ moving_spike_man_img = pygame.image.load(os.path.join('Assets/moving spike.png')
 moving_spike_man_handle_img = pygame.image.load(os.path.join('Assets/moving spike handle.png'))
 flag_img = pygame.image.load(os.path.join('Assets/flag.png'))
 play_button_img = pygame.image.load(os.path.join('Assets/play button.png'))
+icon = pygame.image.load(os.path.join('Assets/icon.png'))
 
 # screen
 screen = pygame.display.set_mode((900, 500))
 pygame.display.set_caption('Get To The Goal V3')
+pygame.display.set_icon(icon)
 
 # font?
 font = pygame.font.SysFont("Arial", 50, bold=True, italic=False)
