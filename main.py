@@ -1,13 +1,11 @@
 import pygame
 import os
 import sys
-
 pygame.init()
 pygame.mixer.init()
-
 # music and sfx
 pygame.mixer.music.load('Assets/bg music.mp3')
-pygame.mixer.music.set_volume(0.7)
+pygame.mixer.music.set_volume(0.4)
 death_sound = pygame.mixer.Sound('Assets/death effect.mp3')
 # images
 player_img = pygame.image.load(os.path.join('Assets/player.png'))
@@ -28,14 +26,13 @@ font = pygame.font.SysFont("Arial", 50, bold=True, italic=False)
 font2 = pygame.font.SysFont("Arial", 20, bold=False, italic=False)
 font3 = pygame.font.SysFont("Arial", 45, bold=False, italic=False)
 font4 = pygame.font.SysFont("Arial", 100, bold=True, italic=False)
-
 # some variables or smth
 game_started = False
 completed_level = False
 current_level = 1
 winning_text = font3.render("Level Complete! Press ENTER to go to the next level", True, (255, 255, 255))
 final_winning_text = font3.render("You Win! Press ENTER to return to the main menu", True, (255, 255, 255))
-
+game_restarted = False
 # movement
 class Player():
     def __init__(self, x, y, vel, img, spikes, moving_spikes, flag):
@@ -46,7 +43,7 @@ class Player():
         self.spikes = spikes
         self.moving_spikes = moving_spikes
         self.flag = flag
-        
+
     def draw(self):
         global completed_level
         global current_level
@@ -57,7 +54,6 @@ class Player():
             if keys[pygame.K_a] or keys[pygame.K_LEFT]:
                 if self.x > self.vel:
                     self.x -= self.vel
-
             if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
                 if self.x < 900 - self.vel - 100:
                     self.x += self.vel
@@ -65,24 +61,25 @@ class Player():
             if keys[pygame.K_w] or keys[pygame.K_UP]:
                 if self.y > self.vel:
                     self.y -= self.vel
-
             if keys[pygame.K_s] or keys[pygame.K_DOWN]:
                 if self.y < 500 - 100 - self.vel:
                     self.y += self.vel
             
         for spike in self.spikes:
             if self.check_collision_spike(spike):
-                pygame.mixer.Sound.play(death_sound)
-                self.x = 20
-                self.y = 200
-                break
+                if completed_level == False:
+                    pygame.mixer.Sound.play(death_sound)
+                    self.x = 20
+                    self.y = 200
+                    break
             
         for moving_spike in self.moving_spikes:
             if self.check_collision_moving_spike(moving_spike):
-                pygame.mixer.Sound.play(death_sound)
-                self.x = 20
-                self.y = 200
-                break
+                if completed_level == False:
+                    pygame.mixer.Sound.play(death_sound)
+                    self.x = 20
+                    self.y = 200
+                    break
         
         if self.check_collision_flag(self.flag):
             completed_level = True
@@ -108,6 +105,7 @@ class Player():
         global completed_level
         global current_level
         global game_started
+        global game_restarted
         keys = pygame.key.get_pressed()
         if completed_level:
             if current_level < 15:
@@ -120,9 +118,12 @@ class Player():
             else:
                 screen.blit(final_winning_text, (15, 200))
                 if keys[pygame.K_RETURN]:
+                    current_level = 1
                     completed_level = False
                     game_started = False
-
+                    game_restarted = True
+                    self.x = 20
+                    self.y = 200
 class Button():
     def __init__(self, x, y, img):
         self.x = x
@@ -148,7 +149,6 @@ class Button():
         screen.blit(self.img, (self.x, self.y))
         
         return action
-
 class Spike():
     def __init__(self, x, y, img):
         self.x = x
@@ -165,18 +165,15 @@ class Moving_Spike():
         self.img = img
         self.speed = speed
         self.direction = 1
-
     def draw(self):
         if self.y <= 0:
             self.direction = 1
         elif self.y >= 400:
             self.direction = -1
-
         self.y += self.speed * self.direction
         
         screen.blit(moving_spike_man_handle_img, (self.x + 45, 0))
         screen.blit(self.img, (self.x, self.y))
-
         
 class Flag():
     def __init__(self, x, y, img):
@@ -189,49 +186,122 @@ class Flag():
         
 class Level():
     def __init__(self, level, flag):
+        global game_started
+        global game_restarted
         self.level = level
         self.flag = flag
-        if level == 5:
+        self.spikes = []
+        self.moving_spikes = []
+        if game_started and game_restarted:
+            level = 1
+            self.level = 1
+        if level == 1:
+            self.spikes = []
+            self.moving_spikes = []
+        elif level == 2:
+            self.spikes = [Spike(400, 200, spike_man_img)]
+            self.moving_spikes = []
+        elif level == 3:
+            self.spikes = [Spike(350, 200, spike_man_img), 
+                           Spike(450, 200, spike_man_img)]
+            self.moving_spikes = []
+        elif level == 4:
+            self.spikes = [Spike(200, 20, spike_man_img),
+                           Spike(200, 380, spike_man_img),
+                           Spike(400, 200, spike_man_img),
+                           Spike(600, 20, spike_man_img),
+                           Spike(600, 380, spike_man_img)]
+            self.moving_spikes = []
+        elif level == 5:
+            self.spikes = []
             self.moving_spikes = [Moving_Spike(500, 200, moving_spike_man_img, 4)]
-        if level == 6:
+        elif level == 6:
+            self.spikes = []
             self.moving_spikes = [Moving_Spike(350, 200, moving_spike_man_img, 4),
-                                  Moving_Spike(450, 200, moving_spike_man_img, 4)]
-        if level == 7:
+                                Moving_Spike(450, 200, moving_spike_man_img, 4)]
+        elif level == 7:
+            self.spikes = []
             self.moving_spikes = [Moving_Spike(350, 200, moving_spike_man_img, 3),
-                                  Moving_Spike(500, 200, moving_spike_man_img, 7)]
-        if level == 8:
+                                Moving_Spike(500, 200, moving_spike_man_img, 7)]
+        elif level == 8:
+            self.spikes = [Spike(400, 200, spike_man_img)]
             self.moving_spikes = [Moving_Spike(500, 200, moving_spike_man_img, 7),
-                                  Moving_Spike(300, 400, moving_spike_man_img, 8)]
-        if level == 9:
+                                Moving_Spike(300, 400, moving_spike_man_img, 8)]
+        elif level == 9:
+            self.spikes = []
             self.moving_spikes = [Moving_Spike(200, 250, moving_spike_man_img, 7),
-                                  Moving_Spike(400, 400, moving_spike_man_img, 5),
-                                  Moving_Spike(600, 100, moving_spike_man_img, 8)]
-        if level == 10:
+                                Moving_Spike(400, 400, moving_spike_man_img, 5),
+                                Moving_Spike(600, 100, moving_spike_man_img, 8)]
+        elif level == 10:
+            self.spikes = [Spike(300, 0, spike_man_img),
+                           Spike(500, 400, spike_man_img),
+                           Spike(700, 0, spike_man_img),
+                           Spike(700, 400, spike_man_img)]
             self.moving_spikes = [Moving_Spike(200, 0, moving_spike_man_img, 3),
                                   Moving_Spike(400, 0, moving_spike_man_img, 7),
                                   Moving_Spike(600, 0, moving_spike_man_img, 10)]
-        if level == 11:
+        elif level == 11:
+            self.spikes = [Spike(200, 20, spike_man_img),
+                           Spike(200, 380, spike_man_img),
+                           Spike(400, 200, spike_man_img),
+                           Spike(600, 20, spike_man_img),
+                           Spike(600, 380, spike_man_img)]
             self.moving_spikes = [Moving_Spike(300, 0, moving_spike_man_img, 6),
                                   Moving_Spike(400, 0, moving_spike_man_img, 5),
                                   Moving_Spike(500, 400, moving_spike_man_img, 6)]
-        if level == 12:
+        elif level == 12:
+            self.spikes = [Spike(200, 200, spike_man_img), 
+                           Spike(300, 200, spike_man_img),
+                           Spike(400, 200, spike_man_img),
+                           Spike(500, 200, spike_man_img),
+                           Spike(600, 200, spike_man_img),
+                           Spike(700, 200, spike_man_img)]
             self.moving_spikes = [Moving_Spike(200, 400, moving_spike_man_img, 7),
                                   Moving_Spike(300, 0, moving_spike_man_img, 7),
                                   Moving_Spike(400, 400, moving_spike_man_img, 7),
                                   Moving_Spike(500, 0, moving_spike_man_img, 7),
                                   Moving_Spike(600, 400,  moving_spike_man_img, 7),
                                   Moving_Spike(700, 0, moving_spike_man_img, 7)]
-        if level == 13:
+        elif level == 13:
+            self.spikes = [Spike(400, 200, spike_man_img),
+                           Spike(200, 100, spike_man_img),
+                           Spike(200, 300, spike_man_img),
+                           Spike(600, 400, spike_man_img),
+                           Spike(600, 300, spike_man_img)]
             self.moving_spikes = [Moving_Spike(200, 200, moving_spike_man_img, 7),
                                   Moving_Spike(400, 0, moving_spike_man_img, 10),
                                   Moving_Spike(600, 100, moving_spike_man_img, 8)]
-        if level == 14:
+        elif level == 14:
+            self.spikes = [Spike(200, 0, spike_man_img),
+                           Spike(300, 0, spike_man_img),
+                           Spike(400, 0, spike_man_img),
+                           Spike(500, 0, spike_man_img),
+                           Spike(600, 0, spike_man_img),
+                           Spike(700, 0, spike_man_img),
+                           Spike(800, 0, spike_man_img),
+                           Spike(200, 400, spike_man_img),
+                           Spike(300, 400, spike_man_img),
+                           Spike(400, 400, spike_man_img),
+                           Spike(500, 400, spike_man_img),
+                           Spike(600, 400, spike_man_img),
+                           Spike(700, 400, spike_man_img),
+                           Spike(800, 400, spike_man_img)]
             self.moving_spikes =  [Moving_Spike(200, 0, moving_spike_man_img, 3),
                                   Moving_Spike(300, 0, moving_spike_man_img, 4),
                                   Moving_Spike(500, 0, moving_spike_man_img, 6),
                                   Moving_Spike(600, 0, moving_spike_man_img, 7),
                                   Moving_Spike(800, 0, moving_spike_man_img, 9)]
-        if level == 15:
+        elif level == 15:
+            self.spikes = [Spike(300, 0, spike_man_img),
+                           Spike(300, 75, spike_man_img),
+                           Spike(300, 150, spike_man_img),
+                           Spike(500, 200, spike_man_img),
+                           Spike(500, 300, spike_man_img),
+                           Spike(500, 400, spike_man_img),
+                           Spike(700, 0, spike_man_img),
+                           Spike(700, 100, spike_man_img),
+                           Spike(700, 300, spike_man_img),
+                           Spike(700, 400, spike_man_img),]
             self.moving_spikes = [Moving_Spike(200, 0, moving_spike_man_img, 8),
                                   Moving_Spike(400, 0, moving_spike_man_img, 5),
                                   Moving_Spike(600, 0, moving_spike_man_img, 6),
@@ -255,16 +325,14 @@ class Level():
             screen.blit(level_1_description_1, (50, 50))
             screen.blit(level_1_description_2, (50, 75))
             screen.blit(level_1_description_3, (50, 100))
-
-        if self.level == 2:
+        elif self.level == 2:
             # the player flag
             player_thing.draw()
             self.flag.draw()
             
             # spikes
-            spikes = [Spike(400, 200, spike_man_img)]
-            player_thing.spikes = spikes
-            for spike in spikes:
+            player_thing.spikes = self.spikes
+            for spike in self.spikes:
                 spike.draw()
                 
             player_thing.check()
@@ -277,16 +345,14 @@ class Level():
             screen.blit(level_2_description_1, (50, 50))
             screen.blit(level_2_description_2, (50, 75))
             
-        if self.level == 3:
+        elif self.level == 3:
             # the player flag
             player_thing.draw()
             self.flag.draw()
             
             # spikes
-            spikes = [Spike(350, 200, spike_man_img), 
-                      Spike(450, 200, spike_man_img)]
-            player_thing.spikes = spikes
-            for spike in spikes:
+            player_thing.spikes = self.spikes
+            for spike in self.spikes:
                 spike.draw()
                 
             player_thing.check()
@@ -297,19 +363,14 @@ class Level():
             screen.blit(level_3_text, (400, 0))
             screen.blit(level_3_description, (50, 50))
             
-        if self.level == 4:
+        elif self.level == 4:
             # the player flag
             player_thing.draw()
             self.flag.draw()
             
             # spikes
-            spikes = (Spike(200, 20, spike_man_img),
-                      Spike(200, 380, spike_man_img),
-                      Spike(400, 200, spike_man_img),
-                      Spike(600, 20, spike_man_img),
-                      Spike(600, 380, spike_man_img))
-            player_thing.spikes = spikes
-            for spike in spikes:
+            player_thing.spikes = self.spikes
+            for spike in self.spikes:
                 spike.draw()
             
             player_thing.check()
@@ -320,17 +381,14 @@ class Level():
             screen.blit(level_4_text, (400, 0))
             screen.blit(level_4_description, (50, 50))
             
-        if self.level == 5:
+        elif self.level == 5:
             # the player flag
             player_thing.draw()
             self.flag.draw()
             
             # spikes
-            spikes = []
-            player_thing.spikes = spikes
+            player_thing.spikes = self.spikes
             player_thing.moving_spikes = self.moving_spikes
-            for spike in spikes:
-                spike.draw()
             for moving_spike in self.moving_spikes:
                 moving_spike.draw()
                 
@@ -342,16 +400,14 @@ class Level():
             screen.blit(level_5_text, (400, 0))
             screen.blit(level_5_description, (50, 50))
             
-        if self.level == 6:
+        elif self.level == 6:
             # the player flag
             player_thing.draw()
             self.flag.draw()
             
             # spikes
-            spikes = []
+            player_thing.spikes = self.spikes
             player_thing.moving_spikes = self.moving_spikes
-            for spike in spikes:
-                spike.draw()
             for moving_spike in self.moving_spikes:
                 moving_spike.draw()
                 
@@ -363,14 +419,13 @@ class Level():
             screen.blit(level_6_text, (400, 0))
             screen.blit(level_6_description, (50, 50))
         
-        if self.level == 7:
+        elif self.level == 7:
             # the player flag
             player_thing.draw()
             self.flag.draw()
-            
+
             # spikes
-            spikes = []
-            player_thing.spikes = spikes
+            player_thing.spikes = self.spikes
             player_thing.moving_spikes = self.moving_spikes
             for moving_spike in self.moving_spikes:
                 moving_spike.draw()
@@ -383,16 +438,15 @@ class Level():
             screen.blit(level_7_text, (400, 0))
             screen.blit(level_7_description, (50, 50))
             
-        if self.level == 8:
+        elif self.level == 8:
             # the player flag
             player_thing.draw()
             self.flag.draw()
             
             # spikes
-            spikes = [Spike(400, 200, spike_man_img)]
-            player_thing.spikes = spikes
+            player_thing.spikes = self.spikes
             player_thing.moving_spikes = self.moving_spikes
-            for spike in spikes:
+            for spike in self.spikes:
                 spike.draw()
             for moving_spike in self.moving_spikes:
                 moving_spike.draw()
@@ -405,17 +459,14 @@ class Level():
             screen.blit(level_8_text, (400, 0))
             screen.blit(level_8_description, (50, 50))
             
-        if self.level == 9:
+        elif self.level == 9:
             # the player flag
             player_thing.draw()
             self.flag.draw()
             
             # spikes
-            spikes = []
-            player_thing.spikes = spikes
+            player_thing.spikes = self.spikes
             player_thing.moving_spikes = self.moving_spikes
-            #for spike in spikes:
-                #spike.draw()
             for moving_spike in self.moving_spikes:
                 moving_spike.draw()
             
@@ -427,20 +478,15 @@ class Level():
             screen.blit(level_9_text, (400, 0))
             screen.blit(level_9_description, (50, 50))
             
-        if self.level == 10:
+        elif self.level == 10:
             # the player flag
             player_thing.draw()
             self.flag.draw()
             
             # spikes
-            spikes = [Spike(300, 0, spike_man_img),
-                      Spike(500, 400, spike_man_img),
-                      Spike(700, 0, spike_man_img),
-                      Spike(700, 400, spike_man_img)]
-
-            player_thing.spikes = spikes
+            player_thing.spikes = self.spikes
             player_thing.moving_spikes = self.moving_spikes
-            for spike in spikes:
+            for spike in self.spikes:
                 spike.draw()
             for moving_spike in self.moving_spikes:
                 moving_spike.draw()
@@ -453,20 +499,15 @@ class Level():
             screen.blit(level_10_text, (400, 0))
             screen.blit(level_10_description, (50, 50))
             
-        if self.level == 11:
+        elif self.level == 11:
             # the player flag
             player_thing.draw()
             self.flag.draw()
             
             # spikes
-            spikes = [Spike(200, 20, spike_man_img),
-                      Spike(200, 380, spike_man_img),
-                      Spike(400, 200, spike_man_img),
-                      Spike(600, 20, spike_man_img),
-                      Spike(600, 380, spike_man_img)]
-            player_thing.spikes = spikes
+            player_thing.spikes = self.spikes
             player_thing.moving_spikes = self.moving_spikes
-            for spike in spikes:
+            for spike in self.spikes:
                 spike.draw()
             for moving_spike in self.moving_spikes:
                 moving_spike.draw()
@@ -479,21 +520,15 @@ class Level():
             screen.blit(level_11_text, (400, 0))
             screen.blit(level_11_description, (50, 50))
             
-        if self.level == 12:
+        elif self.level == 12:
             # the player flag
             player_thing.draw()
             self.flag.draw()
             
             # spikes
-            spikes = [Spike(200, 200, spike_man_img), 
-                      Spike(300, 200, spike_man_img),
-                      Spike(400, 200, spike_man_img),
-                      Spike(500, 200, spike_man_img),
-                      Spike(600, 200, spike_man_img),
-                      Spike(700, 200, spike_man_img)]
-            player_thing.spikes = spikes
+            player_thing.spikes = self.spikes
             player_thing.moving_spikes = self.moving_spikes
-            for spike in spikes:
+            for spike in self.spikes:
                 spike.draw()
             for moving_spike in self.moving_spikes:
                 moving_spike.draw()
@@ -505,20 +540,15 @@ class Level():
             level_12_description = font2.render("Slow and steady", True, (0, 0, 0))
             screen.blit(level_12_text, (400, 0))
             screen.blit(level_12_description, (50, 50))
-        if self.level == 13:
+        elif self.level == 13:
             # the player flag
             player_thing.draw()
             self.flag.draw()
             
             # spikes
-            spikes = [Spike(400, 200, spike_man_img),
-                      Spike(200, 100, spike_man_img),
-                      Spike(200, 300, spike_man_img),
-                      Spike(600, 400, spike_man_img),
-                      Spike(600, 300, spike_man_img)]
-            player_thing.spikes = spikes
+            player_thing.spikes = self.spikes
             player_thing.moving_spikes = self.moving_spikes
-            for spike in spikes:
+            for spike in self.spikes:
                 spike.draw()
             for moving_spike in self.moving_spikes:
                 moving_spike.draw()
@@ -531,29 +561,15 @@ class Level():
             screen.blit(level_13_text, (400, 0))
             screen.blit(level_13_description, (50, 50))
             
-        if self.level == 14:
+        elif self.level == 14:
             # the player flag
             player_thing.draw()
             self.flag.draw()
             
             # spikes
-            spikes = [Spike(200, 0, spike_man_img),
-                      Spike(300, 0, spike_man_img),
-                      Spike(400, 0, spike_man_img),
-                      Spike(500, 0, spike_man_img),
-                      Spike(600, 0, spike_man_img),
-                      Spike(700, 0, spike_man_img),
-                      Spike(800, 0, spike_man_img),
-                      Spike(200, 400, spike_man_img),
-                      Spike(300, 400, spike_man_img),
-                      Spike(400, 400, spike_man_img),
-                      Spike(500, 400, spike_man_img),
-                      Spike(600, 400, spike_man_img),
-                      Spike(700, 400, spike_man_img),
-                      Spike(800, 400, spike_man_img)]
-            player_thing.spikes = spikes
+            player_thing.spikes = self.spikes
             player_thing.moving_spikes = self.moving_spikes
-            for spike in spikes:
+            for spike in self.spikes:
                 spike.draw()
             for moving_spike in self.moving_spikes:
                 moving_spike.draw()
@@ -566,25 +582,15 @@ class Level():
             screen.blit(level_14_text, (400, 0))
             screen.blit(level_14_description, (50, 50))
             
-        if self.level == 15:
+        elif self.level == 15:
             # the player flag
             player_thing.draw()
             self.flag.draw()
             
             # spikes
-            spikes = [Spike(300, 0, spike_man_img),
-                      Spike(300, 75, spike_man_img),
-                      Spike(300, 150, spike_man_img),
-                      Spike(500, 200, spike_man_img),
-                      Spike(500, 300, spike_man_img),
-                      Spike(500, 400, spike_man_img),
-                      Spike(700, 0, spike_man_img),
-                      Spike(700, 100, spike_man_img),
-                      Spike(700, 300, spike_man_img),
-                      Spike(700, 400, spike_man_img),]
-            player_thing.spikes = spikes
+            player_thing.spikes = self.spikes
             player_thing.moving_spikes = self.moving_spikes
-            for spike in spikes:
+            for spike in self.spikes:
                 spike.draw()
             for moving_spike in self.moving_spikes:
                 moving_spike.draw()
@@ -600,7 +606,6 @@ class Level():
 flag = Flag(775, 300, flag_img)
 player_thing = Player(20, 200, 5, player_img, [], [], flag)
 play_button = Button(350, 300, play_button_img)
-
 # level stuff
 level_1 = Level(1, flag)
 level_2 = Level(2, flag)
@@ -617,7 +622,6 @@ level_12 = Level(12, flag)
 level_13 = Level(13, flag)
 level_14 = Level(14, flag)
 level_15 = Level(15, flag)
-
 # main loop
 pygame.mixer.music.play(-1)
 while True:
