@@ -5,8 +5,9 @@ pygame.init()
 pygame.mixer.init()
 # music and sfx
 pygame.mixer.music.load('Assets/bg music.mp3')
-pygame.mixer.music.set_volume(0.4)
+pygame.mixer.music.set_volume(0.1)
 death_sound = pygame.mixer.Sound('Assets/death effect.mp3')
+pygame.mixer.Sound.set_volume(death_sound, 0.1)
 # images
 player_img = pygame.image.load(os.path.join('Assets/player.png'))
 spike_man_img = pygame.image.load(os.path.join('Assets/spike.png'))
@@ -47,6 +48,7 @@ class Player():
     def draw(self):
         global completed_level
         global current_level
+        global level_has_moving_spikes
         keys = pygame.key.get_pressed()
         
         if completed_level == False:
@@ -66,20 +68,22 @@ class Player():
                     self.y += self.vel
             
         for spike in self.spikes:
-            if self.check_collision_spike(spike):
-                if completed_level == False:
-                    pygame.mixer.Sound.play(death_sound)
-                    self.x = 20
-                    self.y = 200
-                    break
+            if current_level not in [1, 5, 6, 7, 9]:
+                if self.check_collision_spike(spike):
+                    if completed_level == False:
+                        pygame.mixer.Sound.play(death_sound)
+                        self.x = 20
+                        self.y = 200
+                        break
             
         for moving_spike in self.moving_spikes:
-            if self.check_collision_moving_spike(moving_spike):
-                if completed_level == False:
-                    pygame.mixer.Sound.play(death_sound)
-                    self.x = 20
-                    self.y = 200
-                    break
+            if current_level not in [1, 2, 3, 4]:
+                if self.check_collision_moving_spike(moving_spike):
+                    if completed_level == False:
+                        pygame.mixer.Sound.play(death_sound)
+                        self.x = 20
+                        self.y = 200
+                        break
         
         if self.check_collision_flag(self.flag):
             completed_level = True
