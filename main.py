@@ -15,6 +15,7 @@ moving_spike_man_img = pygame.image.load(os.path.join('Assets/moving spike.png')
 moving_spike_man_handle_img = pygame.image.load(os.path.join('Assets/moving spike handle.png'))
 flag_img = pygame.image.load(os.path.join('Assets/flag.png'))
 play_button_img = pygame.image.load(os.path.join('Assets/play button.png'))
+pause_button_img = pygame.image.load(os.path.join('Assets/pause button.png'))
 icon = pygame.image.load(os.path.join('Assets/icon.png'))
 
 # screen
@@ -27,6 +28,7 @@ font = pygame.font.SysFont("Arial", 50, bold=True, italic=False)
 font2 = pygame.font.SysFont("Arial", 20, bold=False, italic=False)
 font3 = pygame.font.SysFont("Arial", 45, bold=False, italic=False)
 font4 = pygame.font.SysFont("Arial", 100, bold=True, italic=False)
+font5 = pygame.font.SysFont("Arial", 200, bold=True, italic=False)
 # some variables or smth
 game_started = False
 completed_level = False
@@ -34,6 +36,7 @@ current_level = 1
 winning_text = font3.render("Level Complete! Press ENTER to go to the next level", True, (255, 255, 255))
 final_winning_text = font3.render("You Win! Press ENTER to return to the main menu", True, (255, 255, 255))
 game_restarted = False
+game_paused = False
 # movement
 class Player():
     def __init__(self, x, y, vel, img, spikes, moving_spikes, flag):
@@ -68,7 +71,7 @@ class Player():
                     self.y += self.vel
             
         for spike in self.spikes:
-            if current_level not in [1, 5, 6, 7, 9]:
+            if current_level not in [1, 5, 6, 7, 9] and game_paused == False:
                 if self.check_collision_spike(spike):
                     if completed_level == False:
                         pygame.mixer.Sound.play(death_sound)
@@ -170,11 +173,13 @@ class Moving_Spike():
         self.speed = speed
         self.direction = 1
     def draw(self):
-        if self.y <= 0:
-            self.direction = 1
-        elif self.y >= 400:
-            self.direction = -1
-        self.y += self.speed * self.direction
+        global game_paused
+        if game_paused == False:
+            if self.y <= 0:
+                self.direction = 1
+            elif self.y >= 400:
+                self.direction = -1
+            self.y += self.speed * self.direction
         
         screen.blit(moving_spike_man_handle_img, (self.x + 45, 0))
         screen.blit(self.img, (self.x, self.y))
@@ -313,6 +318,7 @@ class Level():
     
     def run(self):
         global completed_level
+        global game_paused
         if self.level == 1:
             # the level
             player_thing.draw()
@@ -329,6 +335,14 @@ class Level():
             screen.blit(level_1_description_1, (50, 50))
             screen.blit(level_1_description_2, (50, 75))
             screen.blit(level_1_description_3, (50, 100))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
+                    
         elif self.level == 2:
             # the player flag
             player_thing.draw()
@@ -348,6 +362,13 @@ class Level():
             screen.blit(level_2_text, (400, 0))
             screen.blit(level_2_description_1, (50, 50))
             screen.blit(level_2_description_2, (50, 75))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
             
         elif self.level == 3:
             # the player flag
@@ -366,6 +387,13 @@ class Level():
             level_3_description = font2.render("More spikes", True, (0, 0, 0))
             screen.blit(level_3_text, (400, 0))
             screen.blit(level_3_description, (50, 50))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
             
         elif self.level == 4:
             # the player flag
@@ -384,6 +412,13 @@ class Level():
             level_4_description = font2.render("Go through", True, (0, 0, 0))
             screen.blit(level_4_text, (400, 0))
             screen.blit(level_4_description, (50, 50))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
             
         elif self.level == 5:
             # the player flag
@@ -403,6 +438,13 @@ class Level():
             level_5_description = font2.render("A moving spike moves", True, (0, 0, 0))
             screen.blit(level_5_text, (400, 0))
             screen.blit(level_5_description, (50, 50))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
             
         elif self.level == 6:
             # the player flag
@@ -422,6 +464,13 @@ class Level():
             level_6_description = font2.render("More moving spikes", True, (0, 0, 0))
             screen.blit(level_6_text, (400, 0))
             screen.blit(level_6_description, (50, 50))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
         
         elif self.level == 7:
             # the player flag
@@ -441,6 +490,13 @@ class Level():
             level_7_description = font2.render("Different speeds", True, (0, 0, 0))
             screen.blit(level_7_text, (400, 0))
             screen.blit(level_7_description, (50, 50))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
             
         elif self.level == 8:
             # the player flag
@@ -462,6 +518,13 @@ class Level():
             level_8_description = font2.render("Moving spikes and spikes", True, (0, 0, 0))
             screen.blit(level_8_text, (400, 0))
             screen.blit(level_8_description, (50, 50))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
             
         elif self.level == 9:
             # the player flag
@@ -481,6 +544,13 @@ class Level():
             level_9_description = font2.render("No room for improvement", True, (0, 0, 0))
             screen.blit(level_9_text, (400, 0))
             screen.blit(level_9_description, (50, 50))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
             
         elif self.level == 10:
             # the player flag
@@ -502,6 +572,13 @@ class Level():
             level_10_description = font2.render("Climax", True, (0, 0, 0))
             screen.blit(level_10_text, (400, 0))
             screen.blit(level_10_description, (50, 50))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
             
         elif self.level == 11:
             # the player flag
@@ -523,6 +600,13 @@ class Level():
             level_11_description = font2.render("Deja Vu", True, (0, 0, 0))
             screen.blit(level_11_text, (400, 0))
             screen.blit(level_11_description, (50, 50))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
             
         elif self.level == 12:
             # the player flag
@@ -544,6 +628,14 @@ class Level():
             level_12_description = font2.render("Slow and steady", True, (0, 0, 0))
             screen.blit(level_12_text, (400, 0))
             screen.blit(level_12_description, (50, 50))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
+                    
         elif self.level == 13:
             # the player flag
             player_thing.draw()
@@ -564,6 +656,13 @@ class Level():
             level_13_description = font2.render("Chaos", True, (0, 0, 0))
             screen.blit(level_13_text, (400, 0))
             screen.blit(level_13_description, (50, 50))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
             
         elif self.level == 14:
             # the player flag
@@ -585,6 +684,13 @@ class Level():
             level_14_description = font2.render("Hard", True, (0, 0, 0))
             screen.blit(level_14_text, (400, 0))
             screen.blit(level_14_description, (50, 50))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
             
         elif self.level == 15:
             # the player flag
@@ -606,10 +712,18 @@ class Level():
             level_15_description = font2.render("The end.", True, (0, 0, 0))
             screen.blit(level_15_text, (400, 0))
             screen.blit(level_15_description, (50, 50))
+            if pause_button.draw():
+                game_paused = True
+            
+            if game_paused:
+                paused_text = font5.render("Paused", True, (255, 255, 255))
+                screen.fill((0, 0, 0))
+                screen.blit(paused_text, (160, 50))
             
 flag = Flag(775, 300, flag_img)
 player_thing = Player(20, 200, 5, player_img, [], [], flag)
 play_button = Button(350, 300, play_button_img)
+pause_button = Button(825, 25, pause_button_img)
 # level stuff
 level_1 = Level(1, flag)
 level_2 = Level(2, flag)
