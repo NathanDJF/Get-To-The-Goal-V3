@@ -16,6 +16,10 @@ moving_spike_man_handle_img = pygame.image.load(os.path.join('Assets/moving spik
 flag_img = pygame.image.load(os.path.join('Assets/flag.png'))
 play_button_img = pygame.image.load(os.path.join('Assets/play button.png'))
 pause_button_img = pygame.image.load(os.path.join('Assets/pause button.png'))
+resume_button_img = pygame.image.load(os.path.join('Assets/resume button.png'))
+muted_button_img = pygame.image.load(os.path.join('Assets/muted button.png'))
+unmuted_button_img = pygame.image.load(os.path.join('Assets/unmuted button.png'))
+menu_button_img = pygame.image.load(os.path.join('Assets/menu button.png'))
 icon = pygame.image.load(os.path.join('Assets/icon.png'))
 
 # screen
@@ -37,6 +41,9 @@ winning_text = font3.render("Level Complete! Press ENTER to go to the next level
 final_winning_text = font3.render("You Win! Press ENTER to return to the main menu", True, (255, 255, 255))
 game_restarted = False
 game_paused = False
+song_muted = False
+restarted = False
+song_unmuted = True
 # movement
 class Player():
     def __init__(self, x, y, vel, img, spikes, moving_spikes, flag):
@@ -49,6 +56,7 @@ class Player():
         self.flag = flag
 
     def draw(self):
+        global restarted
         global completed_level
         global current_level
         global level_has_moving_spikes
@@ -87,6 +95,12 @@ class Player():
                         self.x = 20
                         self.y = 200
                         break
+        
+        if restarted and completed_level:
+            self.x = 20
+            self.y = 200
+            restarted = False
+            completed_level = False
         
         if self.check_collision_flag(self.flag):
             completed_level = True
@@ -317,8 +331,11 @@ class Level():
                                   Moving_Spike(800, 400, moving_spike_man_img, 5)]
     
     def run(self):
+        global game_started
         global completed_level
         global game_paused
+        global song_muted, song_unmuted
+        global restarted
         if self.level == 1:
             # the level
             player_thing.draw()
@@ -342,6 +359,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
                     
         elif self.level == 2:
             # the player flag
@@ -369,6 +405,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
             
         elif self.level == 3:
             # the player flag
@@ -394,6 +449,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
             
         elif self.level == 4:
             # the player flag
@@ -419,6 +493,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
             
         elif self.level == 5:
             # the player flag
@@ -445,6 +538,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
             
         elif self.level == 6:
             # the player flag
@@ -471,6 +583,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
         
         elif self.level == 7:
             # the player flag
@@ -497,6 +628,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
             
         elif self.level == 8:
             # the player flag
@@ -525,6 +675,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
             
         elif self.level == 9:
             # the player flag
@@ -551,6 +720,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
             
         elif self.level == 10:
             # the player flag
@@ -579,6 +767,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
             
         elif self.level == 11:
             # the player flag
@@ -607,6 +814,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
             
         elif self.level == 12:
             # the player flag
@@ -635,6 +861,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
                     
         elif self.level == 13:
             # the player flag
@@ -663,6 +908,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
             
         elif self.level == 14:
             # the player flag
@@ -691,6 +955,25 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
             
         elif self.level == 15:
             # the player flag
@@ -719,11 +1002,34 @@ class Level():
                 paused_text = font5.render("Paused", True, (255, 255, 255))
                 screen.fill((0, 0, 0))
                 screen.blit(paused_text, (160, 50))
+                if resume_button.draw():
+                    game_paused = False
+                if song_muted:
+                    if muted_button.draw():
+                        song_unmuted = True
+                        song_muted = False
+                elif song_unmuted:
+                    if unmuted_button.draw():
+                        song_unmuted = False
+                        song_muted = True
+                if menu_button.draw():
+                    game_paused = False
+                    game_started = False
+                    restarted = True
+                    
+            if song_muted:
+                pygame.mixer.music.pause()
+            if song_unmuted:
+                pygame.mixer.music.unpause()
             
 flag = Flag(775, 300, flag_img)
 player_thing = Player(20, 200, 5, player_img, [], [], flag)
 play_button = Button(350, 300, play_button_img)
 pause_button = Button(825, 25, pause_button_img)
+resume_button = Button(300, 300, resume_button_img)
+muted_button = Button(775, 25, muted_button_img)
+unmuted_button = Button(775, 25, unmuted_button_img)
+menu_button = Button(600, 300, menu_button_img)
 # level stuff
 level_1 = Level(1, flag)
 level_2 = Level(2, flag)
